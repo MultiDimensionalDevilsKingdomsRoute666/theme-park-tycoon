@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect, useCallback, useState } from "react";
 import { useGameStore } from "@/store/gameStore";
 import { Camera } from "@/engine/core/Camera";
 import { GameLoop } from "@/engine/core/GameLoop";
@@ -21,7 +21,7 @@ import { tileToScreen } from "@/engine/math/isometric";
 import { MAP_SIZE, ENTRANCE_COL, ENTRANCE_ROW } from "@/engine/constants";
 import { Terrain } from "@/engine/types";
 import type { Particle, RideInstance, SceneryInstance } from "@/engine/types";
-import { randomFloat, randomId } from "@/engine/math/random";
+import { randomFloat } from "@/engine/math/random";
 import TopBar from "@/components/ui/TopBar";
 import Toolbar from "@/components/ui/Toolbar";
 import SidePanel from "@/components/ui/SidePanel";
@@ -29,30 +29,8 @@ import ToastContainer from "@/components/ui/ToastContainer";
 
 export default function GameCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const engineRef = useRef<{
-    camera: Camera;
-    gameLoop: GameLoop;
-    inputManager: InputManager;
-    tileMap: TileMap;
-    renderer: Renderer;
-    rideManager: RideManager;
-    sceneryManager: SceneryManager;
-    guestManager: GuestManager;
-    placementManager: PlacementManager;
-    timeSystem: TimeSystem;
-    happinessSystem: HappinessSystem;
-    cleanlinessSystem: CleanlinessSystem;
-    parkManager: ParkManager;
-    particles: Particle[];
-    time: number;
-    rideSnapshot: RideInstance[];
-    scenerySnapshot: SceneryInstance[];
-  } | null>(null);
-
-  const ridesRef = useRef<RideInstance[]>([]);
-  const sceneryRef = useRef<SceneryInstance[]>([]);
-
-  const forceUpdateRef = useRef(0);
+  const [rideSnapshot, setRideSnapshot] = useState<RideInstance[]>([]);
+  const [scenerySnapshot, setScenerySnapshot] = useState<SceneryInstance[]>([]);
 
   const init = useCallback(() => {
     const canvas = canvasRef.current;
@@ -179,8 +157,6 @@ export default function GameCanvas() {
         if (p.life <= 0) particles.splice(i, 1);
       }
 
-      ridesRef.current = [...rideManager.rides];
-      sceneryRef.current = [...sceneryManager.items];
     };
 
     const onRender = () => {
@@ -245,25 +221,10 @@ export default function GameCanvas() {
     inputManager.attach();
     gameLoop.start();
 
-    engineRef.current = {
-      camera,
-      gameLoop,
-      inputManager,
-      tileMap,
-      renderer,
-      rideManager,
-      sceneryManager,
-      guestManager,
-      placementManager,
-      timeSystem,
-      happinessSystem,
-      cleanlinessSystem,
-      parkManager,
-      particles,
-      time,
-      rideSnapshot: [],
-      scenerySnapshot: [],
-    };
+    const snapshotInterval = setInterval(() => {
+      setRideSnapshot([...rideManager.rides]);
+      setScenerySnapshot([...sceneryManager.items]);
+    }, 500);
 
     const handleResize = () => {
       canvas.width = window.innerWidth;
@@ -276,6 +237,7 @@ export default function GameCanvas() {
     return () => {
       gameLoop.stop();
       inputManager.detach();
+      clearInterval(snapshotInterval);
       window.removeEventListener("resize", handleResize);
     };
   }, []);
@@ -285,19 +247,12 @@ export default function GameCanvas() {
     return () => cleanup?.();
   }, [init]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      forceUpdateRef.current++;
-    }, 500);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-gray-950">
       <canvas ref={canvasRef} className="block" />
       <TopBar />
       <Toolbar />
-      <SidePanel rides={ridesRef.current} scenery={sceneryRef.current} />
+      <SidePanel rides={rideSnapshot} scenery={scenerySnapshot} />
       <ToastContainer />
     </div>
   );

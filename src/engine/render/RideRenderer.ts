@@ -1,4 +1,3 @@
-import { HALF_TILE_W, HALF_TILE_H } from "../constants";
 import { tileToScreen } from "../math/isometric";
 import { RideType } from "../types";
 import type { RideInstance } from "../types";

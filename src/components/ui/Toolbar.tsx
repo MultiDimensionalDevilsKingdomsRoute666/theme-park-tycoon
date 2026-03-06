@@ -2,7 +2,7 @@
 
 import { useGameStore } from "@/store/gameStore";
 import { useToolMode, useSelectedRideType, useSelectedSceneryType } from "@/store/selectors";
-import { ToolMode, RideType, SceneryType } from "@/engine/types";
+import { ToolMode } from "@/engine/types";
 import { RIDE_DEFINITIONS } from "@/data/rides";
 import { SCENERY_DEFINITIONS } from "@/data/scenery";
 import ToolButton from "./ToolButton";

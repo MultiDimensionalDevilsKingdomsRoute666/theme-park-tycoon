@@ -1,5 +1,5 @@
 import { ToolMode, Terrain } from "../types";
-import type { RideType, SceneryType, TileCoord, Toast } from "../types";
+import type { RideType, SceneryType, Toast } from "../types";
 import { PATH_COST, DEMOLISH_REFUND_RATE } from "../constants";
 import { RIDE_DEFINITIONS } from "@/data/rides";
 import { SCENERY_DEFINITIONS } from "@/data/scenery";

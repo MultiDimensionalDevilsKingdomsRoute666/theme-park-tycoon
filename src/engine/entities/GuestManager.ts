@@ -7,8 +7,8 @@ import {
 } from "../constants";
 import { GAME_CONFIG } from "@/data/config";
 import { GuestState } from "../types";
-import type { Guest, TileCoord } from "../types";
-import { randomId, randomChoice, randomFloat } from "../math/random";
+import type { Guest } from "../types";
+import { randomId, randomChoice } from "../math/random";
 import { findPath } from "../math/astar";
 import { TileMap } from "../world/TileMap";
 import { RideManager } from "./RideManager";
@@ -101,7 +101,7 @@ export class GuestManager {
       case GuestState.RIDING:
         break;
       case GuestState.LEAVING:
-        this.handleLeaving(guest, tileMap);
+        this.handleLeaving(guest);
         break;
     }
   }
@@ -177,7 +177,7 @@ export class GuestManager {
     }
   }
 
-  private handleLeaving(guest: Guest, tileMap: TileMap): void {
+  private handleLeaving(guest: Guest): void {
     if (guest.path.length > 0 && guest.pathIndex < guest.path.length) {
       this.moveAlongPath(guest);
     }

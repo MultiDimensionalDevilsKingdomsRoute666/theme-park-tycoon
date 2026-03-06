@@ -1,4 +1,4 @@
-import { HALF_TILE_W, HALF_TILE_H } from "../constants";
+import { HALF_TILE_H } from "../constants";
 import { tileToScreen } from "../math/isometric";
 import { SceneryType } from "../types";
 import type { SceneryInstance } from "../types";
